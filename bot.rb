@@ -15,12 +15,12 @@ class Bot
 
   def self.run
 
-    hipchat = HipChat::Client.new(ENV["HIPCHAT_API_TOKEN"])
+    hipchat = HipChat::Client.new(ENV['HIPCHAT_API_TOKEN'])
 
     dedupe = Dedupe.new
 
-    hipchat_rooms = ENV["HIPCHAT_ROOM"].split(',')
-    boards = ENV["TRELLO_BOARD"].split(',').each_with_index.map {|board, i| [Trello::Board.find(board), hipchat_rooms[i]] }
+    hipchat_rooms = ENV['HIPCHAT_ROOM'].split(',')
+    boards = ENV['TRELLO_BOARD'].split(',').each_with_index.map {|board, i| [Trello::Board.find(board), hipchat_rooms[i]] }
     now = Time.now.utc
     timestamps = {}
 
@@ -49,7 +49,7 @@ class Bot
             when :moveCardToBoard
               "#{action.member_creator.full_name} moved #{card_link} from the #{action.data['boardSource']['name']} board to #{action.data['board']['name']}"
             when :updateCheckItemStateOnCard
-              if action.data["checkItem"]["state"] == 'complete'
+              if action.data['checkItem']['state'] == 'complete'
                 "#{action.member_creator.full_name} checked off \"#{ action.data['checkItem']['name']}\" on #{card_link}"
               else
                 "#{action.member_creator.full_name} added \"#{action.data['checkItem']['name']}\" to #{card_link}"
@@ -58,7 +58,7 @@ class Bot
               "#{action.member_creator.full_name} commented on #{card_link}: #{action.data['text']}"
             else
               STDERR.puts action.inspect
-              ""
+              ''
             end
 
             if message
