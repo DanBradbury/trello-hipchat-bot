@@ -20,21 +20,29 @@ class Bot
     dedupe = Dedupe.new
 
     hipchat_rooms = ENV['HIPCHAT_ROOM'].split(',')
-    boards = ENV['TRELLO_BOARD'].split(',').each_with_index.map {|board, i| [Trello::Board.find(board), hipchat_rooms[i]] }
+    label_filters = ENV['TRELLO_FILTER'].split(',')
+    boards = ENV['TRELLO_BOARD'].split(',').each_with_index.map {|board, i|
+      {
+        board: Trello::Board.find(board),
+        room: hipchat_rooms[i],
+        label_filter: label_filters[i].split('.')
+      }
+    }
+
     now = Time.now.utc
     timestamps = {}
 
     boards.each do |board_with_room|
-      timestamps[board_with_room.first.id] = now
+      timestamps[board_with_room[:board].id] = now
     end
 
     scheduler = Rufus::Scheduler.new
 
     scheduler.every '5s' do
       puts "Querying Trello at #{Time.now.to_s}"
-      boards.each do |board_with_room|
-        board = board_with_room.first
-        hipchat_room = hipchat[board_with_room.last]
+      boards.each do |board_monitor|
+        board = board_monitor[:board]
+        hipchat_room = hipchat[board_monitor[:room]]
         last_timestamp = timestamps[board.id]
         actions = board.actions(:filter => :all, :since => last_timestamp.iso8601)
         actions.each do |action|
@@ -42,8 +50,12 @@ class Bot
             board_link = "<a href='https://trello.com/board/#{action.data['board']['id']}'>#{action.data['board']['name']}</a>"
             card_link = "#{board_link} : <a href='https://trello.com/card/#{action.data['board']['id']}/#{action.data['card']['idShort']}'>#{action.data['card']['name']}</a>"
             message = case action.type.to_sym
-            when :updateCard && action.data['listBefore']
-              "#{action.member_creator.full_name} moved #{card_link} from #{action.data['listBefore']['name']} to #{action.data['listAfter']['name']}"
+            when :updateCard
+                if action.data['listBefore']
+                  "#{action.member_creator.full_name} moved #{card_link} from #{action.data['listBefore']['name']} to #{action.data['listAfter']['name']}"
+                else
+                  ''
+                end
             when :createCard
               "#{action.member_creator.full_name} added #{card_link} to #{action.data['list']['name']}"
             when :moveCardToBoard
