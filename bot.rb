@@ -68,11 +68,15 @@ class Bot
               ""
             end
 
-            if dedupe.new? message
-              puts "Sending: #{message}"
-              hipchat_room.send('Trello', message, :color => :purple)
+            if message
+              if dedupe.new? message
+                puts "Sending: #{message}"
+                hipchat_room.send('Trello', message, :color => :purple)
+              else
+                puts "Supressing duplicate message: #{message}"
+              end
             else
-              puts "Supressing duplicate message: #{message}"
+              puts "Empty message (Not sent): #{message}"
             end
           end
         end
