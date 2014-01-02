@@ -91,7 +91,7 @@ class Bot
             if message.blank?
               puts 'No case statement for this event'
             else
-              if dedupe.new?(hipchat_room.table[:room_id] + message)
+              if dedupe.new?(hipchat_room.room_id + message)
                 puts "Sending: #{message}"
                 hipchat_room.send('Trello', message, :color => :purple)
               else
