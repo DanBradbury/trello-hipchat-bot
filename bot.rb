@@ -47,6 +47,21 @@ class Bot
         actions = board.actions(:filter => :all, :since => last_timestamp.iso8601)
         actions.each do |action|
           if last_timestamp < action.date
+            label_filter = board_monitor[:label_filter]
+            if label_filter.first != '*'
+              if action.attributes[:data]['card']
+                card_colors = Trello::Card.find(action.attributes[:data]['card']['id']).labels.map do |label|
+                  label.attributes[:color]
+                end
+                if (label_filter & card_colors).empty?
+                  puts action.inspect
+                  puts 'Card does not fit filter'
+                  next
+                else
+                  puts 'Card fits filter'
+                end
+              end
+            end
             board_link = "<a href='https://trello.com/board/#{action.data['board']['id']}'>#{action.data['board']['name']}</a>"
             card_link = "#{board_link} : <a href='https://trello.com/card/#{action.data['board']['id']}/#{action.data['card']['idShort']}'>#{action.data['card']['name']}</a>"
             message = case action.type.to_sym
@@ -76,7 +91,7 @@ class Bot
             if message.blank?
               puts 'No case statement for this event'
             else
-              if dedupe.new?(message)
+              if dedupe.new?(hipchat_room.table[:room_id] + message)
                 puts "Sending: #{message}"
                 hipchat_room.send('Trello', message, :color => :purple)
               else
