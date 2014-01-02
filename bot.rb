@@ -42,41 +42,30 @@ class Bot
             board_link = "<a href='https://trello.com/board/#{action.data['board']['id']}'>#{action.data['board']['name']}</a>"
             card_link = "#{board_link} : <a href='https://trello.com/card/#{action.data['board']['id']}/#{action.data['card']['idShort']}'>#{action.data['card']['name']}</a>"
             message = case action.type.to_sym
-            when :updateCard
-              if action.data['listBefore']
-                "#{action.member_creator.full_name} moved #{card_link} from #{action.data['listBefore']['name']} to #{action.data['listAfter']['name']}"
-              end
-
+            when :updateCard && action.data['listBefore']
+              "#{action.member_creator.full_name} moved #{card_link} from #{action.data['listBefore']['name']} to #{action.data['listAfter']['name']}"
             when :createCard
               "#{action.member_creator.full_name} added #{card_link} to #{action.data['list']['name']}"
-
             when :moveCardToBoard
               "#{action.member_creator.full_name} moved #{card_link} from the #{action.data['boardSource']['name']} board to #{action.data['board']['name']}"
-
             when :updateCheckItemStateOnCard
               if action.data["checkItem"]["state"] == 'complete'
                 "#{action.member_creator.full_name} checked off \"#{ action.data['checkItem']['name']}\" on #{card_link}"
               else
                 "#{action.member_creator.full_name} added \"#{action.data['checkItem']['name']}\" to #{card_link}"
               end
-
             when :commentCard
               "#{action.member_creator.full_name} commented on #{card_link}: #{action.data['text']}"
-
             else
               STDERR.puts action.inspect
               ""
             end
 
-            if message
-              if dedupe.new? message
-                puts "Sending: #{message}"
-                hipchat_room.send('Trello', message, :color => :purple)
-              else
-                puts "Supressing duplicate message: #{message}"
-              end
+            if dedupe.new? message
+              puts "Sending: #{message}"
+              hipchat_room.send('Trello', message, :color => :purple)
             else
-              puts "Empty message (Not sent): #{message}"
+              puts "Supressing duplicate message: #{message}"
             end
           end
         end
