@@ -61,15 +61,15 @@ class Bot
               ''
             end
 
-            if message
+            if message.blank?
+              puts 'No case statement for this event'
+            else
               if dedupe.new?(message)
                 puts "Sending: #{message}"
                 hipchat_room.send('Trello', message, :color => :purple)
               else
                 puts "Supressing duplicate message: #{message}"
               end
-            else
-              puts 'No handler for this event'
             end
           end
         end
