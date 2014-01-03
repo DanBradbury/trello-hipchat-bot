@@ -8,7 +8,7 @@ heroku config:set --app my-new-heroku-app \
   HIPCHAT_API_TOKEN=8w1cxvrvxitgvkoaq9clfqqzgy7n7g \
   HIPCHAT_ROOM=Engineering,QA,Engineering \
   TRELLO_OAUTH_PUBLIC_KEY=xre3rgsdbbvvjsy74axyqmtddgdnrr8e \
-  TRELLO_FILTER=*,blue,*
+  TRELLO_FILTER=*,blue,green.yellow
   TRELLO_TOKEN=pdwnbruojwrdvfxxuyu9vtzaea6vfojf9bfa6jcmutkdfomwlk2izmxwnvdcwgkv \
   TRELLO_BOARD=ododysnyxgfqsvtpky7fqqcz,sadnkjasbdksabfsafj32ssd,sadojfsdoerwogioj43
 ```
