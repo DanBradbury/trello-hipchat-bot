@@ -79,7 +79,7 @@ class Bot
               if action.data['checkItem']['state'] == 'complete'
                 "#{action.member_creator.full_name} checked off \"#{ action.data['checkItem']['name']}\" on #{card_link}"
               else
-                "#{action.member_creator.full_name} added \"#{action.data['checkItem']['name']}\" to #{card_link}"
+                "#{action.member_creator.full_name} unchecked off \"#{action.data['checkItem']['name']}\" to #{card_link}"
               end
             when :commentCard
               comment_text = action.data['text']
