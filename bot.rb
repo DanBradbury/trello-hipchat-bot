@@ -87,6 +87,8 @@ class Bot
                 comment_text = comment_text[0..140] + '...'
               end
               "#{action.member_creator.full_name} commented on #{card_link}: #{comment_text}"
+            when :addAttachmentToCard
+              "#{action.member_creator.full_name} attached \"#{ action.data['attachment']['name']}\" to #{card_link}"
             else
               STDERR.puts action.inspect
               ''
