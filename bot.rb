@@ -54,16 +54,17 @@ class Bot
                   label.attributes[:color]
                 end
                 if (label_filter & card_colors).empty?
-                  puts action.inspect
                   puts 'Card does not fit filter'
                   next
                 else
                   puts 'Card fits filter'
                 end
+                puts action.inspect
               end
             end
             board_link = "<a href='https://trello.com/board/#{action.data['board']['id']}'>#{action.data['board']['name']}</a>"
-            card_link = "#{board_link} : <a href='https://trello.com/card/#{action.data['board']['id']}/#{action.data['card']['idShort']}'>#{action.data['card']['name']}</a>"
+            try
+              card_link = "#{board_link} : <a href='https://trello.com/card/#{action.data['board']['id']}/#{action.data['card']['idShort']}'>#{action .data['card']['name']}</a>"
             message = case action.type.to_sym
             when :updateCard
                 if action.data['listBefore']
