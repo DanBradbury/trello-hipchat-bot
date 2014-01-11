@@ -53,18 +53,17 @@ class Bot
                 card_colors = Trello::Card.find(action.attributes[:data]['card']['id']).labels.map do |label|
                   label.attributes[:color]
                 end
+                puts action.inspect
                 if (label_filter & card_colors).empty?
                   puts 'Card does not fit filter'
                   next
                 else
                   puts 'Card fits filter'
                 end
-                puts action.inspect
               end
             end
             board_link = "<a href='https://trello.com/board/#{action.data['board']['id']}'>#{action.data['board']['name']}</a>"
-            try
-              card_link = "#{board_link} : <a href='https://trello.com/card/#{action.data['board']['id']}/#{action.data['card']['idShort']}'>#{action .data['card']['name']}</a>"
+            card_link = "#{board_link} : <a href='https://trello.com/card/#{action.data['board']['id']}/#{action.data['card']['idShort']}'>#{action .data['card']['name']}</a>"
             message = case action.type.to_sym
             when :updateCard
                 if action.data['listBefore']
