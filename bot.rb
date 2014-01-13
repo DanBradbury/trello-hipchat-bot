@@ -63,7 +63,12 @@ class Bot
               end
             end
             board_link = "<a href='https://trello.com/board/#{action.data['board']['id']}'>#{action.data['board']['name']}</a>"
-            card_link = "#{board_link} : <a href='https://trello.com/card/#{action.data['board']['id']}/#{action.data['card']['idShort']}'>#{action .data['card']['name']}</a>"
+            begin
+              card_link = "#{board_link} : <a href='https://trello.com/card/#{action.data['board']['id']}/#{action.data['card']['idShort']}'>#{action .data['card']['name']}</a>"
+            rescue Exception
+              puts 'Card link unable to be constructed. Skipping action.'
+              next
+            end
             message = case action.type.to_sym
             when :updateCard
                 if action.data['listBefore']
